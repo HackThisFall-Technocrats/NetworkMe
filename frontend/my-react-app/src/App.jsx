@@ -9,7 +9,7 @@ function App() {
       <EventRegisterForm />
       </div>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
