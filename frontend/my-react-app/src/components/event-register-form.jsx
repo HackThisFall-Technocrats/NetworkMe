@@ -1,6 +1,16 @@
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import QRCode from 'react-qr-code';
+
+const QRCodeGenerator = ({ url }) => {
+  return (
+    <div>
+      <h2>QR Code</h2>
+      <QRCode value={url} />
+    </div>
+  );
+};
 
 const EventRegisterForm = () => {
   const { register, handleSubmit, control, errors } = useForm({
@@ -311,6 +321,10 @@ const EventRegisterForm = () => {
           </button>
         </form>
       </div>
+      <div>
+          <h1>Generate QR Code</h1>
+          <QRCodeGenerator url="https://www.google.com" />
+        </div>
     </section>
   );
 };
