@@ -31,9 +31,10 @@ exports.getTours = catchAsync(async (req, res, next) => {
 
 exports.createTour = catchAsync(async (req, res, next) => {
   try {
-    console.log('This is data', req.body);
-
-    const newTour = await Tour.create(req.body);
+    // console.log('This is data', req.body);
+    const {volunteers,Name,venue,message,startDateTime,endDateTime} = await req.body;
+    console.log(volunteers,Name,venue,message,startDateTime,endDateTime);
+    const newTour = await Tour.create({volunteers,Name,venue,message,startDateTime,endDateTime});
 
     res.status(201).json({
       status: 'success',

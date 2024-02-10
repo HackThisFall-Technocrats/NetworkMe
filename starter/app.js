@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
+const cors = require("cors");
 const app = express();
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet')
@@ -13,8 +14,10 @@ const UserRouter = require('./routes/UsersRoute');
 const ReviewRouter = require('./routes/reviewRoutes');
 
 //Creating a middleware
+app.use(cors());
 
 app.use(helmet());
+
 
 
 if (process.env.NODE_ENV === 'development') {
