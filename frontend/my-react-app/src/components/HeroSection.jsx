@@ -3,8 +3,8 @@ import { team } from '../assets';
 
 const Hero = () => {
   return (
-    <div className="flex h-screen justify-center items-center gap-10">
-      <div className="left mr-3">
+    <div className="flex h-screen justify-center items-center sm:gap-10 flex-col-reverse sm:flex-row">
+      <div className="left sm:mr-3">
         <h3 className='text-center text-4xl mb-3 text-black'>Networking Made Easy with</h3>
         <h1 className='text-center text-4xl mb-3 text-[#3C3AB1] font-semibold'>Network Me</h1>
         <div className="flex justify-center">
@@ -25,8 +25,8 @@ const Hero = () => {
           </button>
         </div>
       </div>
-      <div className="ml-5 right">
-        <img src={team} alt="Team" className='h-[350px]' />
+      <div className="sm:ml-5 right">
+        <img src={team} alt="Team" className='h-[275px] sm:h-[350px]' />
       </div>
     </div>
   );

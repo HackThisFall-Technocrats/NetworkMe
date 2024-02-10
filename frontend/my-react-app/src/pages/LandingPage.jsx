@@ -13,9 +13,9 @@ const LandingPage = () => {
           <Navbar />
           <HeroSection />
           <FeaturesSection />
-          <TestimonialSection />
+          {/* <TestimonialSection /> */}
+          {/* <EventPageComponent /> */}
           <FooterSection/>
-          <EventPageComponent />
     </div>
   )
 }

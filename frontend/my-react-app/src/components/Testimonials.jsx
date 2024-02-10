@@ -2,7 +2,7 @@ import { images } from '../assets';
 
 const Testimonials = () => {
   return (
-    <div className="main-testi h-[80vh] bg-black">
+    <div className="main-testi bg-customPurple-light">
       <h1 className='font-bold text-3xl text-center mb-3'>Testimonials</h1>
       <div className="flex">
         <div className="flex flex-col w-[280px] h-[300px] justify-center items-center userCard gap-3 p-2 rounded-lg m-auto mt-5">
