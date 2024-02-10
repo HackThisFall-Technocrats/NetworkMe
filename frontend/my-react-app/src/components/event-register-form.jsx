@@ -79,7 +79,12 @@ function EventRegisterForm() {
 
       const response = await axios.post(
         "http://localhost:3000/api/v1/tours",
-        data
+        formData,
+        {
+          headers:{
+            "Content-Type":"multipart/form-data",
+          },
+        }
       );
 
       console.log(response.data);
