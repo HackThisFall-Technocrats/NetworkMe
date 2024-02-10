@@ -26,10 +26,78 @@ const EventRegisterForm = () => {
     name: "volunteers",
   });
 
-  const onSubmit = (data) => {
-    console.log(data);
-    // Here you can handle the form submission, e.g. send the data to a server
-  };
+const onSubmit = async (data) => {
+  console.log(data);
+  console.log("event ki mkc");
+
+  try {
+    // Gather form data into an object
+    const formData = {
+          name: data.Name,  // Assuming "Name" is the correct field name
+          description: data.message,
+          Venue: data.venue,
+        images: data.user_avatar[0], // File upload
+        startDateTime: data.startDateTime,
+        endDateTime: data.endDateTime,
+        organizer: {
+          name: data.organizerName,
+          socialMediaLink: data.organizerSocialMediaLink,
+          photo: data.organizer.photo[0], // File upload
+        },
+        sponsors: sponsorFields.map((sponsor) => ({
+          name: sponsor.name,
+          logo: sponsor.logo[0], // File upload
+          url: sponsor.url,
+        })),
+        volunteers: volunteerFields.map((volunteer) => ({
+          name: volunteer.name,
+          designation: volunteer.designation,
+          socialMediaUrl: volunteer.socialMediaUrl,
+        })),
+      };
+
+           
+
+    // Create FormData object to handle file uploads
+    const formDataToSend = new FormData();
+
+    // Append non-file fields to FormData
+    Object.entries(formData).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        // Append array fields to FormData
+        value.forEach((item, index) => {
+          Object.entries(item).forEach(([itemKey, itemValue]) => {
+        if (itemValue && typeof itemValue === 'object' && itemValue.type === 'file') {
+  formDataToSend.append(`${key}[${index}].${itemKey}`, itemValue[0]);
+} else {
+  formDataToSend.append(`${key}[${index}].${itemKey}`, itemValue);
+}
+
+          });
+        });
+      } else {
+        // Append other fields to FormData
+        formDataToSend.append(key, value);
+      }
+    });
+
+    // Send form data using fetch
+    const response = await fetch('http://127.0.0.1:3000/api/v1/tours', {
+      method: 'POST',
+      body: formDataToSend, // Fixed: use formDataToSend instead of eventData
+    });
+
+    
+    if (response.ok) {
+      console.log('Data saved successfully');
+    } else {
+       const errorResponse = await response.json().catch(() => null);
+    console.error('Error saving data:', errorResponse || 'Unknown error');
+    }
+  } catch (error) {
+    console.error('Error in form submission:', error);
+  }
+};
 
   return (
     <section className="bg-customPurple-light mx-auto">
@@ -40,39 +108,40 @@ const EventRegisterForm = () => {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
           <div>
-            <label
-              htmlFor="email"
-              className="block mb-2 text-sm font-medium text-black"
-            >
-              Your email
-            </label>
-            <input
-              {...register("email", { required: true })}
-              type="email"
-              id="email"
-              className="shadow-sm bg-white border border-gray-300 text-black text-sm rounded-lg focus:ring-primary-100 focus:border-black block w-full p-2.5 "
-              placeholder="name@flowbite.com"
-            />
+            
 
             <label
-              htmlFor="subject"
-              className="block mb-2 text-sm font-medium text-black"
-            >
-              Subject
-            </label>
-            <input
-              {...register("subject", { required: true })}
-              type="text"
-              id="subject"
-              className="shadow-sm bg-white border border-gray-300 text-black text-sm rounded-lg focus:ring-primary-100 focus:border-black block w-full p-2.5 "
-              placeholder="Let us know how we can help you"
-            />
+  htmlFor="Name"
+  className="block mb-2 text-sm font-medium text-black"
+>
+  Name
+</label>
+<input
+  {...register("Name", { required: true })}
+  type="text"
+  id="Name"
+  className="shadow-sm bg-white border border-gray-300 text-black text-sm rounded-lg focus:ring-primary-100 focus:border-black block w-full p-2.5 "
+  placeholder="Hack this fall"
+/>
+<label
+  htmlFor="venue"
+  className="block mb-2 text-sm font-medium text-black"
+>
+  Venue
+</label>
+<input
+  {...register("venue", { required: true })}
+  type="text"
+  id="venue"
+  className="shadow-sm bg-white border border-gray-300 text-black text-sm rounded-lg focus:ring-primary-100 focus:border-black block w-full p-2.5 "
+  placeholder="Hack this fall"
+/>
 
             <label
               htmlFor="message"
               className="block mb-2 text-sm font-medium text-black"
             >
-              Your message
+              Your Description
             </label>
             <textarea
               {...register("message", { required: true })}
