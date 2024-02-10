@@ -3,14 +3,14 @@ const mongoose = require('mongoose');
 
 const eventSchema = new mongoose.Schema(
   {
-    name: {
+    Name: {
       type: String,
       trim: true,
     },
-    Venue: {
+    venue: {
       type: String,
     },
-    description: {
+    message: {
       type: String,
       trim: true,
     },
@@ -35,7 +35,7 @@ const eventSchema = new mongoose.Schema(
         },
         photo: {
           type: String,
-          required: true,
+          // required: true,
         },
       },
     ],
@@ -43,17 +43,17 @@ const eventSchema = new mongoose.Schema(
       {
         name: {
           type: String,
-          required: true,
+          // required: true,
           trim: true,
           maxlength: 255,
         },
         logo: {
           type: String,
-          required: true,
+          // required: true,
         },
         url: {
           type: String,
-          required: true,
+          // required: true,
         },
       },
     ],
@@ -61,7 +61,7 @@ const eventSchema = new mongoose.Schema(
       {
         name: {
           type: String,
-          required: true,
+          // required: true,
           maxlength: 255,
         },
         designation: {
