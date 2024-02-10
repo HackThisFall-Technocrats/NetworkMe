@@ -1,7 +1,17 @@
+
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import axios from "axios";
+import QRCode from 'react-qr-code';
+
+const QRCodeGenerator = ({ url }) => {
+  return (
+    <div>
+      <h2>QR Code</h2>
+      <QRCode value={url} />
+    </div>
+  );
+};
 
 const EventRegisterForm = () => {
   const { register, handleSubmit, control, errors } = useForm({
@@ -150,7 +160,7 @@ const onSubmit = async (data) => {
               {...register("message", { required: true })}
               id="message"
               rows={6}
-              className="shadow-sm bg-white border border-gray-300 text-black text-sm rounded-lg focus:ring-primary-100 focus:border-black block w-full p-2.5 "
+              className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg shadow-sm border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
               placeholder="Leave a comment..."
             />
 
@@ -344,6 +354,7 @@ const onSubmit = async (data) => {
                 <input
                   {...register(`volunteers[${index}].name`)}
                   type="text"
+                  id={`volunteers[${index}].name`}
                   className="shadow-sm bg-white border border-gray-300 text-black text-sm rounded-lg focus:ring-primary-100 focus:border-black block w-full p-2.5 "
                 />
               </div>
@@ -357,6 +368,7 @@ const onSubmit = async (data) => {
                 <input
                   {...register(`volunteers[${index}].designation`)}
                   type="text"
+                  id={`volunteers[${index}].designation`}
                   className="shadow-sm bg-white border border-gray-300 text-black text-sm rounded-lg focus:ring-primary-100 focus:border-black block w-full p-2.5 "
                 />
               </div>
@@ -370,6 +382,7 @@ const onSubmit = async (data) => {
                 <input
                   {...register(`volunteers[${index}].socialMediaUrl`)}
                   type="url"
+                  id={`volunteers[${index}].socialMediaUrl`}
                   className="shadow-sm bg-white border border-gray-300 text-black text-sm rounded-lg focus:ring-primary-100 focus:border-black block w-full p-2.5 "
                 />
               </div>
@@ -399,6 +412,10 @@ const onSubmit = async (data) => {
           </button>
         </form>
       </div>
+      <div>
+          <h1>Generate QR Code</h1>
+          <QRCodeGenerator url="https://www.google.com" />
+        </div>
     </section>
   );
 };
