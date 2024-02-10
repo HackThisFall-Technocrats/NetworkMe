@@ -1,191 +1,89 @@
+/* eslint-disable prettier/prettier */
 const mongoose = require('mongoose');
-const slugify = require('slugify');
-// const User = require('../model/userModel');
-const validator = require('validator');
 
-const tourSchema = new mongoose.Schema(
+const eventSchema = new mongoose.Schema(
   {
-    name: {
-      type: String,
-      required: [true, 'A tour must have name specified'],
-      unique: true,
-      trim: true,
-  
-      // validate: [validator.isAlpha, 'A tour name must contain only alphabets']
-    },
-  
-    duration: {
-      type: Number,
-      required: [true, 'A tour must have duration specified'],
-    },
-    Venue: {
-      type: String,
-      required: [true, 'A event must have venue specified'],
-    },
-
-    difficulty: {
-      type: String,
-      required: [true, 'A tour must have difficulty specified'],
-      enum: {
-        values: ['easy', 'difficult', 'medium'],
-        message: 'The difficulty must be either easy, difficult or medium',
-      },
-    },
-
-    time: {
-      type: Number,
-      required: [true, 'A tour must have price specified'],
-    },
-    ratingAverage: {
-      type: Number,
-      default: 4.5,
-      minlength: [1, 'the rating must be above 1.0'],
-      maxlength: [5, 'The rating must be below 5.0'],
-    },
-  
- 
-  
-    description: {
+    Name: {
       type: String,
       trim: true,
     },
- 
-    images: [String],
-    createdAt: {
+    venue: {
+      type: String,
+    },
+    message: {
+      type: String,
+      trim: true,
+    },
+    images: String,
+    startDateTime: {
       type: Date,
-      default: Date.now(),
-      select: false,
     },
-    startDates: [Date],
-    secretTour: {
-      type: Boolean,
-      default: false,
+    endDateTime: {
+      type: Date,
     },
-
-    startLocation: {
-      //Geo Location
-      type: {
-        type: String,
-        default: 'Point',
-        enum: ['Point'],
-      },
-      coordinates: [Number],
-      address: 'String',
-      description: 'String',
-    },
-    locations: [
-      {
-        //Geo Location
-        type: {
-          type: String,
-          default: 'Point',
-          enum: ['Point'],
-        },
-        coordinates: [Number],
-        address: 'String',
-        description: 'String',
-        day: Number,
-      },
-    ],
     organizers: [
       {
-        names: {
+        name: {
           type: String,
           required: true,
           trim: true,
           maxlength: 255,
         },
-        socials: [
-          {
-            platform: {
-              type: String,
-              enum: ['twitter', 'facebook', 'instagram', 'linkedin', 'other'],
-              required: true,
-            },
-            link: {
-              type: String,
-              required: true,
-            },
-          },
-        ],
+        socialMediaLink: {
+          type: String,
+          required: true,
+        },
+        photo: {
+          type: String,
+          // required: true,
+        },
+      },
+    ],
+    sponsors: [
+      {
+        name: {
+          type: String,
+          // required: true,
+          trim: true,
+          maxlength: 255,
+        },
+        logo: {
+          type: String,
+          // required: true,
+        },
+        url: {
+          type: String,
+          // required: true,
+        },
       },
     ],
     volunteers: [
       {
-        namess: {
+        name: {
           type: String,
-          required: true,
-          trim: true,
+          // required: true,
           maxlength: 255,
         },
-        socials: [
-          {
-            platform: {
-              type: String,
-              enum: ['twitter', 'facebook', 'instagram', 'linkedin', 'other'],
-              required: true,
-            },
-            link: {
-              type: String,
-              required: true,
-            },
-          },
-        ],
+        designation: {
+          type: String,
+        },
+        socialMediaUrl: {
+          type: String,
+        },
       },
     ],
   },
-
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
   },
 );
 
-tourSchema.virtual('durationWeeks').get(function () {
-  return this.duration / 7;
+eventSchema.virtual('durationWeeks').get(function () {
+  return (this.endDateTime - this.startDateTime) / (7 * 24 * 60 * 60 * 1000);
 });
 
-tourSchema.pre('save', function (next) {
-  this.slug = slugify(this.name, { lowercase: true });
-  next();
-});
+// ... Rest of your code
 
-// tourSchema.pre('save',async function (next) {
-//   const guidesPromises = this.guides.map(async (id) => await User.findById(id));
-//   this.guides = await Promise.all(guidesPromises)
-//   next();
-// });
-
-// tourSchema.post('save', function (doc, next) {
-//   console.log(doc);
-// })
-
-//Query Middelware
-tourSchema.pre(/^find/, function (next) {
-  this.find({ secretTour: { $ne: true } });
-  this.start = Date.now();
-  next();
-});
-
-tourSchema.pre(/^find/, function (next) {
-  this.populate({
-    path: 'guides',
-    select: '-__v -passwordChangedAt',
-  });
-});
-
-tourSchema.post(/^find/, function (docs, next) {
-  console.log(`Query took${Date.now() - this.start}milissecondss`);
-  console.log(docs);
-  next();
-});
-
-//Aggerate Middelware
-tourSchema.pre('aggregate', function (next) {
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
-  console.log(this.pipeline);
-  next();
-});
-
-const Tour = mongoose.model('Tour', tourSchema);
-module.exports = Tour;
+const Event = mongoose.model('Event', eventSchema);
+module.exports = Event;

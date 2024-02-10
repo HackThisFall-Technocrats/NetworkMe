@@ -1,4 +1,17 @@
-import React from 'react'
+
+import { useForm, Controller, useFieldArray } from "react-hook-form";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import QRCode from 'react-qr-code';
+
+const QRCodeGenerator = ({ url }) => {
+  return (
+    <div>
+      <h2>QR Code</h2>
+      <QRCode value={url} />
+    </div>
+  );
+};
 
 const EventRegisterForm = () => {
   const { register, handleSubmit, control, errors } = useForm({
@@ -23,28 +36,26 @@ const EventRegisterForm = () => {
     control,
     name: "volunteers",
   });
-
 const onSubmit = async (data) => {
   console.log(data);
-  console.log("event ki mkc");
 
   try {
-    // Gather form data into an object
-    const formData = {
-          name: data.Name,  // Assuming "Name" is the correct field name
-          description: data.message,
-          Venue: data.venue,
-        images: data.user_avatar[0], // File upload
+
+      const formData = {
+        name: data.Name,
+        description: data.message,
+        Venue: data.venue,
+        images: data.user_avatar[0],
         startDateTime: data.startDateTime,
         endDateTime: data.endDateTime,
         organizer: {
           name: data.organizerName,
           socialMediaLink: data.organizerSocialMediaLink,
-          photo: data.organizer.photo[0], // File upload
+          photo: data.organizer.photo[0],
         },
         sponsors: sponsorFields.map((sponsor) => ({
           name: sponsor.name,
-          logo: sponsor.logo[0], // File upload
+          logo: sponsor.logo[0],
           url: sponsor.url,
         })),
         volunteers: volunteerFields.map((volunteer) => ({
@@ -54,49 +65,55 @@ const onSubmit = async (data) => {
         })),
       };
 
-           
-
-    // Create FormData object to handle file uploads
-    const formDataToSend = new FormData();
-
-    // Append non-file fields to FormData
-    Object.entries(formData).forEach(([key, value]) => {
+    // Append fields to FormData
+    Object.entries(data).forEach(([key, value]) => {
       if (Array.isArray(value)) {
-        // Append array fields to FormData
         value.forEach((item, index) => {
           Object.entries(item).forEach(([itemKey, itemValue]) => {
-        if (itemValue && typeof itemValue === 'object' && itemValue.type === 'file') {
-  formDataToSend.append(`${key}[${index}].${itemKey}`, itemValue[0]);
-} else {
-  formDataToSend.append(`${key}[${index}].${itemKey}`, itemValue);
-}
-
+            if (
+              itemValue &&
+              typeof itemValue === "object" &&
+              itemValue.type === "file"
+            ) {
+              formData.append(`${key}[${index}].${itemKey}`, itemValue);
+            } else {
+              formData.append(`${key}[${index}].${itemKey}`, itemValue);
+            }
           });
         });
       } else {
-        // Append other fields to FormData
-        formDataToSend.append(key, value);
+        formData.append(key, value);
       }
     });
 
-    // Send form data using fetch
-    const response = await fetch('http://127.0.0.1:3000/api/v1/tours', {
-      method: 'POST',
-      body: formDataToSend, // Fixed: use formDataToSend instead of eventData
-    });
+    console.log(formData);
 
-    
-    if (response.ok) {
-      console.log('Data saved successfully');
+    const response = await axios.post(
+      "http://localhost:3000/api/v1/tours",
+      formData,
+      {
+        headers: {
+          Accept: "application/json",
+          device: "android",
+          language: "en",
+          version: "1.0.7",
+        },
+      }
+    );
+
+    console.log(response.data);
+
+    if (response.status === 200) {
+      console.log("Data saved successfully");
     } else {
-       const errorResponse = await response.json().catch(() => null);
-    console.error('Error saving data:', errorResponse || 'Unknown error');
+      console.error("Error saving data:", response.data || "Unknown error");
     }
   } catch (error) {
-    console.error('Error in form submission:', error);
+    console.error("Error in form submission:", error);
   }
 };
 
+  
   return (
     <section className="bg-customPurple-light mx-auto">
       <div className="py-8 lg:py-16 px-4 mx-auto max-w-screen-md">
@@ -106,34 +123,32 @@ const onSubmit = async (data) => {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
           <div>
-            
-
             <label
-  htmlFor="Name"
-  className="block mb-2 text-sm font-medium text-black"
->
-  Name
-</label>
-<input
-  {...register("Name", { required: true })}
-  type="text"
-  id="Name"
-  className="shadow-sm bg-white border border-gray-300 text-black text-sm rounded-lg focus:ring-primary-100 focus:border-black block w-full p-2.5 "
-  placeholder="Hack this fall"
-/>
-<label
-  htmlFor="venue"
-  className="block mb-2 text-sm font-medium text-black"
->
-  Venue
-</label>
-<input
-  {...register("venue", { required: true })}
-  type="text"
-  id="venue"
-  className="shadow-sm bg-white border border-gray-300 text-black text-sm rounded-lg focus:ring-primary-100 focus:border-black block w-full p-2.5 "
-  placeholder="Hack this fall"
-/>
+              htmlFor="Name"
+              className="block mb-2 text-sm font-medium text-black"
+            >
+              Name
+            </label>
+            <input
+              {...register("Name", { required: true })}
+              type="text"
+              id="Name"
+              className="shadow-sm bg-white border border-gray-300 text-black text-sm rounded-lg focus:ring-primary-100 focus:border-black block w-full p-2.5 "
+              placeholder="Hack this fall"
+            />
+            <label
+              htmlFor="venue"
+              className="block mb-2 text-sm font-medium text-black"
+            >
+              Venue
+            </label>
+            <input
+              {...register("venue", { required: true })}
+              type="text"
+              id="venue"
+              className="shadow-sm bg-white border border-gray-300 text-black text-sm rounded-lg focus:ring-primary-100 focus:border-black block w-full p-2.5 "
+              placeholder="Hack this fall"
+            />
 
             <label
               htmlFor="message"
@@ -145,7 +160,7 @@ const onSubmit = async (data) => {
               {...register("message", { required: true })}
               id="message"
               rows={6}
-              className="shadow-sm bg-white border border-gray-300 text-black text-sm rounded-lg focus:ring-primary-100 focus:border-black block w-full p-2.5 "
+              className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg shadow-sm border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
               placeholder="Leave a comment..."
             />
 
@@ -162,11 +177,9 @@ const onSubmit = async (data) => {
               className="shadow-sm bg-white border border-gray-300 text-black text-sm rounded-lg focus:ring-primary-100 focus:border-black block w-full p-2.5 "
               aria-describedby="user_avatar_help"
             />
-            <div
-              className="mt-1 text-sm text-black"
-              id="user_avatar_help"
-            >
-              A profile picture is useful to confirm you are logged into your account
+            <div className="mt-1 text-sm text-black" id="user_avatar_help">
+              A profile picture is useful to confirm you are logged into your
+              account
             </div>
           </div>
 
@@ -264,7 +277,9 @@ const onSubmit = async (data) => {
 
           {sponsorFields.map((item, index) => (
             <div key={item.id} className="mb-4">
-              <h3 className="mb-2 font-semibold text-black">Sponsor {index + 1}</h3>
+              <h3 className="mb-2 font-semibold text-black">
+                Sponsor {index + 1}
+              </h3>
               <div>
                 <label
                   htmlFor={`sponsors[${index}].name`}
@@ -307,8 +322,8 @@ const onSubmit = async (data) => {
                   className="shadow-sm bg-white border border-gray-300 text-black text-sm rounded-lg focus:ring-primary-100 focus:border-black block w-full p-2.5 "
                 />
               </div>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={() => removeSponsor(index)}
                 className="mt-2 py-2 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none "
               >
@@ -326,7 +341,9 @@ const onSubmit = async (data) => {
 
           {volunteerFields.map((item, index) => (
             <div key={item.id} className="mb-4">
-              <h3 className="mb-2 font-semibold text-black">Volunteer {index + 1}</h3>
+              <h3 className="mb-2 font-semibold text-black">
+                Volunteer {index + 1}
+              </h3>
               <div>
                 <label
                   htmlFor={`volunteers[${index}].name`}
@@ -337,6 +354,7 @@ const onSubmit = async (data) => {
                 <input
                   {...register(`volunteers[${index}].name`)}
                   type="text"
+                  id={`volunteers[${index}].name`}
                   className="shadow-sm bg-white border border-gray-300 text-black text-sm rounded-lg focus:ring-primary-100 focus:border-black block w-full p-2.5 "
                 />
               </div>
@@ -350,6 +368,7 @@ const onSubmit = async (data) => {
                 <input
                   {...register(`volunteers[${index}].designation`)}
                   type="text"
+                  id={`volunteers[${index}].designation`}
                   className="shadow-sm bg-white border border-gray-300 text-black text-sm rounded-lg focus:ring-primary-100 focus:border-black block w-full p-2.5 "
                 />
               </div>
@@ -363,11 +382,12 @@ const onSubmit = async (data) => {
                 <input
                   {...register(`volunteers[${index}].socialMediaUrl`)}
                   type="url"
+                  id={`volunteers[${index}].socialMediaUrl`}
                   className="shadow-sm bg-white border border-gray-300 text-black text-sm rounded-lg focus:ring-primary-100 focus:border-black block w-full p-2.5 "
                 />
               </div>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={() => removeVolunteer(index)}
                 className="mt-2 py-2 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none "
               >
@@ -377,7 +397,9 @@ const onSubmit = async (data) => {
           ))}
           <button
             type="button"
-            onClick={() => appendVolunteer({ name: "", designation: "", socialMediaUrl: "" })}
+            onClick={() =>
+              appendVolunteer({ name: "", designation: "", socialMediaUrl: "" })
+            }
             className="py-2 px-4 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none"
           >
             Add Volunteer
@@ -390,6 +412,10 @@ const onSubmit = async (data) => {
           </button>
         </form>
       </div>
+      <div>
+          <h1>Generate QR Code</h1>
+          <QRCodeGenerator url="https://www.google.com" />
+        </div>
     </section>
   );
 };
