@@ -1,8 +1,9 @@
-
+import React, { useState } from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import QRCode from 'react-qr-code';
+import QRCode from "react-qr-code";
+import axios from "axios";
 
 const QRCodeGenerator = ({ url }) => {
   return (
@@ -13,7 +14,7 @@ const QRCodeGenerator = ({ url }) => {
   );
 };
 
-const EventRegisterForm = () => {
+function EventRegisterForm() {
   const { register, handleSubmit, control, errors } = useForm({
     defaultValues: {
       sponsors: [{ name: "", logo: "", url: "" }],
@@ -36,84 +37,63 @@ const EventRegisterForm = () => {
     control,
     name: "volunteers",
   });
-const onSubmit = async (data) => {
-  console.log(data);
 
-  try {
+  const onSubmit = async (data) => {
+    console.log(data);
 
-      const formData = {
-        name: data.Name,
-        description: data.message,
-        Venue: data.venue,
-        images: data.user_avatar[0],
-        startDateTime: data.startDateTime,
-        endDateTime: data.endDateTime,
-        organizer: {
-          name: data.organizerName,
-          socialMediaLink: data.organizerSocialMediaLink,
-          photo: data.organizer.photo[0],
-        },
-        sponsors: sponsorFields.map((sponsor) => ({
-          name: sponsor.name,
-          logo: sponsor.logo[0],
-          url: sponsor.url,
-        })),
-        volunteers: volunteerFields.map((volunteer) => ({
-          name: volunteer.name,
-          designation: volunteer.designation,
-          socialMediaUrl: volunteer.socialMediaUrl,
-        })),
-      };
+    try {
+      const formData = new FormData();
 
-    // Append fields to FormData
-    Object.entries(data).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
-        value.forEach((item, index) => {
-          Object.entries(item).forEach(([itemKey, itemValue]) => {
-            if (
-              itemValue &&
-              typeof itemValue === "object" &&
-              itemValue.type === "file"
-            ) {
-              formData.append(`${key}[${index}].${itemKey}`, itemValue);
-            } else {
-              formData.append(`${key}[${index}].${itemKey}`, itemValue);
-            }
-          });
-        });
+      formData.append("name", data.Name);
+      formData.append("description", data.message);
+      formData.append("Venue", data.venue);
+      formData.append("images", data.user_avatar[0]);
+      formData.append("startDateTime", data.startDateTime);
+      formData.append("endDateTime", data.endDateTime);
+      formData.append("organizer[name]", data.organizerName);
+      formData.append(
+        "organizer[socialMediaLink]",
+        data.organizerSocialMediaLink
+      );
+      formData.append("organizer[photo]", data.organizer.photo[0]);
+
+      sponsorFields.forEach((sponsor, index) => {
+        formData.append(`sponsors[${index}].name`, sponsor.name);
+        formData.append(`sponsors[${index}].logo`, sponsor.logo[0]);
+        formData.append(`sponsors[${index}].url`, sponsor.url);
+      });
+
+      volunteerFields.forEach((volunteer, index) => {
+        formData.append(`volunteers[${index}].name`, volunteer.name);
+        formData.append(
+          `volunteers[${index}].designation`,
+          volunteer.designation
+        );
+        formData.append(
+          `volunteers[${index}].socialMediaUrl`,
+          volunteer.socialMediaUrl
+        );
+      });
+
+      console.log(formData);
+
+      const response = await axios.post(
+        "http://localhost:3000/api/v1/tours",
+        data
+      );
+
+      console.log(response.data);
+
+      if (response.status === "success") {
+        console.log("Data saved successfully");
       } else {
-        formData.append(key, value);
+        console.error("Error saving data:", response.data || "Unknown error");
       }
-    });
-
-    console.log(formData);
-
-    const response = await axios.post(
-      "http://localhost:3000/api/v1/tours",
-      formData,
-      {
-        headers: {
-          Accept: "application/json",
-          device: "android",
-          language: "en",
-          version: "1.0.7",
-        },
-      }
-    );
-
-    console.log(response.data);
-
-    if (response.status === 200) {
-      console.log("Data saved successfully");
-    } else {
-      console.error("Error saving data:", response.data || "Unknown error");
+    } catch (error) {
+      console.error("Error in form submission:", error);
     }
-  } catch (error) {
-    console.error("Error in form submission:", error);
-  }
-};
+  };
 
-  
   return (
     <section className="bg-customPurple-light mx-auto">
       <div className="py-8 lg:py-16 px-4 mx-auto max-w-screen-md">
@@ -413,11 +393,16 @@ const onSubmit = async (data) => {
         </form>
       </div>
       <div>
-          <h1>Generate QR Code</h1>
-          <QRCodeGenerator url="https://www.google.com" />
-        </div>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+          {/* Form fields here */}
+        </form>
+      </div>
+      <div>
+        <h1>Generate QR Code</h1>
+        <QRCodeGenerator url="https://www.google.com" />
+      </div>
     </section>
   );
-};
+}
 
 export default EventRegisterForm;
