@@ -9,6 +9,7 @@ const UserForm = () => {
 
   const onSubmit = (data) => {
     console.log(data);
+    // Here you can handle the form submission, e.g. send the data to a server
   };
 
   return (
