@@ -5,7 +5,7 @@ import github from '../assets/github.png';
 const UserCard = () => {
   return (
     <div className="flex flex-col w-[250px] h-[340px] justify-center shadow-lg items-center userCard gap-4 p-2 rounded-lg m-auto mt-5 bg-white">
-cd2496d583674b04e7723e473958249f095274
+
       <img
         src={images}
         alt=""
