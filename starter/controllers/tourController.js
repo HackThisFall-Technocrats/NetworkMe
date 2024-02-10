@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 const Tour = require('./../model/toursModel');
 const APIfeatures = require('./../utils/apiFeatures');
 const catchAsync = require('./../utils/catchAsync');
@@ -10,7 +11,7 @@ exports.alaisTopTours = (req, res, next) => {
 };
 
 exports.getTours = catchAsync(async (req, res, next) => {
-  console.log(req.query);
+  console.log(await req.body);
   //Execute query
   const features = new APIfeatures(Tour.find(), req.query)
     .filter()
@@ -29,15 +30,25 @@ exports.getTours = catchAsync(async (req, res, next) => {
 });
 
 exports.createTour = catchAsync(async (req, res, next) => {
-  const newTour = await Tour.create(req.body);
-  res.status(201).json({
-    status: 'success',
-    data: {
-      tour: newTour,
-    },
-  });
-});
+  try {
+    console.log('This is data', req.body);
 
+    const newTour = await Tour.create(req.body);
+
+    res.status(201).json({
+      status: 'success',
+      data: {
+        tour: newTour,
+      },
+    });
+  } catch (error) {
+    console.error('Error creating tour:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Internal Server Error',
+    });
+  }
+});
 exports.getTour = catchAsync(async (req, res, next) => {
   const GetById = await Tour.findById(req.params.id);
   if (!GetById) {
