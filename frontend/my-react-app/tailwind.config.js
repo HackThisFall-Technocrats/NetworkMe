@@ -24,6 +24,11 @@ export default {
           dark: '#B7791F',
         },
       },
+      fontFamily: {
+        sans: ['Monsterrat', 'Arial', 'sans-serif'],
+        // You can specify additional font families for different font styles (e.g., serif, mono).
+        // For simplicity, I'm only showing the 'sans' font family here.
+      },
     },
   },
   plugins: [],
