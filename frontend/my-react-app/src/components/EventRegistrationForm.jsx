@@ -2,18 +2,9 @@ import React, { useState } from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import QRCode from "react-qr-code";
 import axios from "axios";
-
-const QRCodeGenerator = ({ url }) => {
-  return (
-    <div>
-      <h2>QR Code</h2>
-      <QRCode value={url} />
-    </div>
-  );
-};
-
+import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 function EventRegisterForm() {
   const { register, handleSubmit, control, errors } = useForm({
     defaultValues: {
@@ -21,6 +12,8 @@ function EventRegisterForm() {
       volunteers: [{ name: "", designation: "", socialMediaUrl: "" }],
     },
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
   const {
     fields: sponsorFields,
     append: appendSponsor,
@@ -40,6 +33,7 @@ function EventRegisterForm() {
 
   const onSubmit = async (data) => {
     console.log(data);
+    setIsLoading(true);
 
     try {
       const formData = new FormData();
@@ -86,11 +80,15 @@ function EventRegisterForm() {
 
       if (response.status === "success") {
         console.log("Data saved successfully");
+        navigate("/EventPage");
       } else {
         console.error("Error saving data:", response.data || "Unknown error");
+        navigate("/EventPage");
+        setIsLoading(false);
       }
     } catch (error) {
       console.error("Error in form submission:", error);
+      setIsLoading(false);
     }
   };
 
@@ -387,19 +385,16 @@ function EventRegisterForm() {
           <button
             type="submit"
             className="py-3 px-5 text-sm font-medium text-center text-white rounded-lg bg-customPurple sm:w-fit hover:bg-customPurple-dark focus:ring-4 focus:outline-none focus:ring-customPurple-light"
+            disabled={isLoading} // Disable the button when loading
           >
-            Send message
+            {isLoading ? "Loading..." : "Send message"}
           </button>
         </form>
       </div>
       <div>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-          {/* Form fields here */}
-        </form>
-      </div>
-      <div>
-        <h1>Generate QR Code</h1>
-        <QRCodeGenerator url="https://www.google.com" />
+        <Link to="/EventPage">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-8"></form>;
+        </Link>
       </div>
     </section>
   );
