@@ -1,25 +1,19 @@
+import React, { useState } from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import QRCode from "react-qr-code";
-import { Link } from "react-router-dom";
-
-const QRCodeGenerator = ({ url }) => {
-  return (
-    <div>
-      <h2>QR Code</h2>
-      <QRCode value={url} />
-    </div>
-  );
-};
-
-const EventRegisterForm = () => {
+import axios from "axios";
+import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+function EventRegisterForm() {
   const { register, handleSubmit, control, errors } = useForm({
     defaultValues: {
       sponsors: [{ name: "", logo: "", url: "" }],
       volunteers: [{ name: "", designation: "", socialMediaUrl: "" }],
     },
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
   const {
     fields: sponsorFields,
     append: appendSponsor,
@@ -36,79 +30,65 @@ const EventRegisterForm = () => {
     control,
     name: "volunteers",
   });
+
   const onSubmit = async (data) => {
     console.log(data);
+    setIsLoading(true);
 
     try {
-      const formData = {
-        name: data.Name,
-        description: data.message,
-        Venue: data.venue,
-        images: data.user_avatar[0],
-        startDateTime: data.startDateTime,
-        endDateTime: data.endDateTime,
-        organizer: {
-          name: data.organizerName,
-          socialMediaLink: data.organizerSocialMediaLink,
-          photo: data.organizer.photo[0],
-        },
-        sponsors: sponsorFields.map((sponsor) => ({
-          name: sponsor.name,
-          logo: sponsor.logo[0],
-          url: sponsor.url,
-        })),
-        volunteers: volunteerFields.map((volunteer) => ({
-          name: volunteer.name,
-          designation: volunteer.designation,
-          socialMediaUrl: volunteer.socialMediaUrl,
-        })),
-      };
+      const formData = new FormData();
 
-      // Append fields to FormData
-      Object.entries(data).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          value.forEach((item, index) => {
-            Object.entries(item).forEach(([itemKey, itemValue]) => {
-              if (
-                itemValue &&
-                typeof itemValue === "object" &&
-                itemValue.type === "file"
-              ) {
-                formData.append(`${key}[${index}].${itemKey}`, itemValue);
-              } else {
-                formData.append(`${key}[${index}].${itemKey}`, itemValue);
-              }
-            });
-          });
-        } else {
-          formData.append(key, value);
-        }
+      formData.append("name", data.Name);
+      formData.append("description", data.message);
+      formData.append("Venue", data.venue);
+      formData.append("images", data.user_avatar[0]);
+      formData.append("startDateTime", data.startDateTime);
+      formData.append("endDateTime", data.endDateTime);
+      formData.append("organizer[name]", data.organizerName);
+      formData.append(
+        "organizer[socialMediaLink]",
+        data.organizerSocialMediaLink
+      );
+      formData.append("organizer[photo]", data.organizer.photo[0]);
+
+      sponsorFields.forEach((sponsor, index) => {
+        formData.append(`sponsors[${index}].name`, sponsor.name);
+        formData.append(`sponsors[${index}].logo`, sponsor.logo[0]);
+        formData.append(`sponsors[${index}].url`, sponsor.url);
+      });
+
+      volunteerFields.forEach((volunteer, index) => {
+        formData.append(`volunteers[${index}].name`, volunteer.name);
+        formData.append(
+          `volunteers[${index}].designation`,
+          volunteer.designation
+        );
+        formData.append(
+          `volunteers[${index}].socialMediaUrl`,
+          volunteer.socialMediaUrl
+        );
       });
 
       console.log(formData);
 
       const response = await axios.post(
         "http://localhost:3000/api/v1/tours",
-        formData,
-        {
-          headers: {
-            Accept: "application/json",
-            device: "android",
-            language: "en",
-            version: "1.0.7",
-          },
-        }
+        data
       );
 
       console.log(response.data);
 
-      if (response.status === 200) {
+      if (response.status === "success") {
         console.log("Data saved successfully");
+        navigate("/EventPage");
       } else {
         console.error("Error saving data:", response.data || "Unknown error");
+        navigate("/EventPage");
+        setIsLoading(false);
       }
     } catch (error) {
       console.error("Error in form submission:", error);
+      setIsLoading(false);
     }
   };
 
@@ -387,7 +367,7 @@ const EventRegisterForm = () => {
               <button
                 type="button"
                 onClick={() => removeVolunteer(index)}
-                className="mt-2 py-2 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none "
+                className="mx-3 mt-2 py-2 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none "
               >
                 Remove Volunteer
               </button>
@@ -398,15 +378,16 @@ const EventRegisterForm = () => {
             onClick={() =>
               appendVolunteer({ name: "", designation: "", socialMediaUrl: "" })
             }
-            className="py-2 px-4 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none"
+            className="mx-3 py-2 px-4 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none"
           >
             Add Volunteer
           </button>
           <button
             type="submit"
-            className="py-3 px-5 text-sm font-medium text-center text-white rounded-lg bg-customPurple sm:w-fit hover:bg-customPurple-dark focus:ring-4 focus:outline-none focus:ring-customPurple-light"
+            className="mx-3 py-3 px-5 text-sm font-medium text-center text-white rounded-lg bg-customPurple sm:w-fit hover:bg-customPurple-dark focus:ring-4 focus:outline-none focus:ring-customPurple-light"
+            disabled={isLoading} // Disable the button when loading
           >
-            Send message
+            {isLoading ? "Loading..." : "Send message"}
           </button>
           <Link to='/'>
             <button>Back</button>
@@ -414,11 +395,12 @@ const EventRegisterForm = () => {
         </form>
       </div>
       <div>
-        <h1>Generate QR Code</h1>
-        <QRCodeGenerator url="https://www.google.com" />
+        <Link to="/EventPage">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-8"></form>;
+        </Link>
       </div>
     </section>
   );
-};
+}
 
 export default EventRegisterForm;
