@@ -8,7 +8,7 @@ const Navbar = () => {
       <p className='text-2xl font-bold text-[#3C3AB1]'>Network-me</p>
 
     </div>
-    <ul className="flex space-x-6 hidden sm:block" style={{ color: 'black' , fontSize: 20, fontWeight: 400}}>
+    <ul className="flex space-x-6 hidden sm:flex" style={{ color: 'black' , fontSize: 20, fontWeight: 400}}>
       <li>Home</li>
       <li>Events</li>
       <li>Features</li>
