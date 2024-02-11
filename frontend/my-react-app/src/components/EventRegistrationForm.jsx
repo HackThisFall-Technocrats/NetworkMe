@@ -1,8 +1,8 @@
-
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import QRCode from 'react-qr-code';
+import QRCode from "react-qr-code";
+import { Link } from "react-router-dom";
 
 const QRCodeGenerator = ({ url }) => {
   return (
@@ -36,11 +36,10 @@ const EventRegisterForm = () => {
     control,
     name: "volunteers",
   });
-const onSubmit = async (data) => {
-  console.log(data);
+  const onSubmit = async (data) => {
+    console.log(data);
 
-  try {
-
+    try {
       const formData = {
         name: data.Name,
         description: data.message,
@@ -65,55 +64,54 @@ const onSubmit = async (data) => {
         })),
       };
 
-    // Append fields to FormData
-    Object.entries(data).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
-        value.forEach((item, index) => {
-          Object.entries(item).forEach(([itemKey, itemValue]) => {
-            if (
-              itemValue &&
-              typeof itemValue === "object" &&
-              itemValue.type === "file"
-            ) {
-              formData.append(`${key}[${index}].${itemKey}`, itemValue);
-            } else {
-              formData.append(`${key}[${index}].${itemKey}`, itemValue);
-            }
+      // Append fields to FormData
+      Object.entries(data).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          value.forEach((item, index) => {
+            Object.entries(item).forEach(([itemKey, itemValue]) => {
+              if (
+                itemValue &&
+                typeof itemValue === "object" &&
+                itemValue.type === "file"
+              ) {
+                formData.append(`${key}[${index}].${itemKey}`, itemValue);
+              } else {
+                formData.append(`${key}[${index}].${itemKey}`, itemValue);
+              }
+            });
           });
-        });
+        } else {
+          formData.append(key, value);
+        }
+      });
+
+      console.log(formData);
+
+      const response = await axios.post(
+        "http://localhost:3000/api/v1/tours",
+        formData,
+        {
+          headers: {
+            Accept: "application/json",
+            device: "android",
+            language: "en",
+            version: "1.0.7",
+          },
+        }
+      );
+
+      console.log(response.data);
+
+      if (response.status === 200) {
+        console.log("Data saved successfully");
       } else {
-        formData.append(key, value);
+        console.error("Error saving data:", response.data || "Unknown error");
       }
-    });
-
-    console.log(formData);
-
-    const response = await axios.post(
-      "http://localhost:3000/api/v1/tours",
-      formData,
-      {
-        headers: {
-          Accept: "application/json",
-          device: "android",
-          language: "en",
-          version: "1.0.7",
-        },
-      }
-    );
-
-    console.log(response.data);
-
-    if (response.status === 200) {
-      console.log("Data saved successfully");
-    } else {
-      console.error("Error saving data:", response.data || "Unknown error");
+    } catch (error) {
+      console.error("Error in form submission:", error);
     }
-  } catch (error) {
-    console.error("Error in form submission:", error);
-  }
-};
+  };
 
-  
   return (
     <section className="bg-customPurple-light mx-auto">
       <div className="py-8 lg:py-16 px-4 mx-auto max-w-screen-md">
@@ -410,12 +408,15 @@ const onSubmit = async (data) => {
           >
             Send message
           </button>
+          <Link to='/'>
+            <button>Back</button>
+          </Link>
         </form>
       </div>
       <div>
-          <h1>Generate QR Code</h1>
-          <QRCodeGenerator url="https://www.google.com" />
-        </div>
+        <h1>Generate QR Code</h1>
+        <QRCodeGenerator url="https://www.google.com" />
+      </div>
     </section>
   );
 };

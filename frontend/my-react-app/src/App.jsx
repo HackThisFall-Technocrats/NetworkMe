@@ -14,7 +14,7 @@ function App() {
         {/* <UserCard /> */}
         {/* <Testimonials /> */}
         {/* <SponsorTile/> */}
-        <LandingPage />
+        {/* <LandingPage /> */}
       </div>
     </>
   );
