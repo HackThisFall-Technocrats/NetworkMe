@@ -367,7 +367,7 @@ function EventRegisterForm() {
               <button
                 type="button"
                 onClick={() => removeVolunteer(index)}
-                className="mt-2 py-2 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none "
+                className="mx-3 mt-2 py-2 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none "
               >
                 Remove Volunteer
               </button>
@@ -378,13 +378,13 @@ function EventRegisterForm() {
             onClick={() =>
               appendVolunteer({ name: "", designation: "", socialMediaUrl: "" })
             }
-            className="py-2 px-4 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none"
+            className="mx-3 py-2 px-4 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none"
           >
             Add Volunteer
           </button>
           <button
             type="submit"
-            className="py-3 px-5 text-sm font-medium text-center text-white rounded-lg bg-customPurple sm:w-fit hover:bg-customPurple-dark focus:ring-4 focus:outline-none focus:ring-customPurple-light"
+            className="mx-3 py-3 px-5 text-sm font-medium text-center text-white rounded-lg bg-customPurple sm:w-fit hover:bg-customPurple-dark focus:ring-4 focus:outline-none focus:ring-customPurple-light"
             disabled={isLoading} // Disable the button when loading
           >
             {isLoading ? "Loading..." : "Send message"}
