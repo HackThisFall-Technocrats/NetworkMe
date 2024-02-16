@@ -11,7 +11,7 @@ function App() {
         <Route path="/EventRegistrationForm" element={<EventRegisterForm />} />
         <Route path="/EventPage" element={<EventPage />} />
       </Routes>
-      <div className="flex justify-center flex-col items-center w-[100vw]"></div>
+      <div className="flex justify-center flex-col items-center w-[98vw]"></div>
     </>
   );
 }
