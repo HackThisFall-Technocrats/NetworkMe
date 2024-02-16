@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 
 const Hero = () => {
   return (
-    <div className="flex h-screen justify-center items-center sm:gap-10 flex-col-reverse sm:flex-row">
+    <div className="flex py-[10rem] justify-center items-center sm:gap-10 flex-col-reverse sm:flex-row">
       <div className="left sm:mr-3">
-        <h3 className="text-center text-4xl mb-3 text-black">
+        <h3 className="text-center text-4xl mb-3 text-black font-bold">
           Networking Made Easy with
         </h3>
         <h1 className="text-center text-4xl mb-3 text-[#3C3AB1] font-semibold">

@@ -16,7 +16,9 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
+body {
+  font-family: 'Montserrat', sans-serif;
+}
 a {
   font-weight: 500;
   color: #646cff;
@@ -69,4 +71,11 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+.event-card {
+  display: none;
+}
+.event-card:last-child {
+  display: block;
 }

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import QRCode from "react-qr-code";
+import OrganizerCard from "../components/OrganizerCard";
+
 
 const QRCodeGenerator = ({ url }) => {
   return (
@@ -63,9 +65,9 @@ const EventPage = () => {
           >
             Venue: {event.venue}
           </h2>
-          <blockquote class="text-xl italic font-semibold text-gray-900 dark:text-white">
+          <blockquote className="text-xl italic font-semibold text-gray-900 dark:text-white">
             <svg
-              class="w-8 h-8 text-gray-400 dark:text-gray-600 mb-4"
+              className="w-8 h-8 text-gray-400 dark:text-gray-600 mb-4"
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
               fill="currentColor"
@@ -83,6 +85,7 @@ const EventPage = () => {
             End Date: {new Date(event.endDateTime).toLocaleString()}
           </p>
           <QRCodeGenerator url={event._id} />
+         
           <h3
             className="section-title"
             style={{
@@ -114,19 +117,12 @@ const EventPage = () => {
               marginTop: "20px",
               marginBottom: "10px",
             }}
-          >
+          >-
             Volunteers:
           </h3>
           <ul className="list">
             {event.volunteers.map((volunteer) => (
-              <li
-                key={volunteer._id}
-                style={{ color: "#333", marginBottom: "8px" }}
-              >
-                <strong>Name:</strong> {volunteer.name},{" "}
-                <strong>Designation:</strong> {volunteer.designation},{" "}
-                <strong>Social Media:</strong> {volunteer.socialMediaUrl}
-              </li>
+              <OrganizerCard key={volunteer._id} volunteer={volunteer} />
             ))}
           </ul>
         </div>
